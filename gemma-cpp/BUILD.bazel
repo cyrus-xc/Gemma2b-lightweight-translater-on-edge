@@ -1,0 +1,97 @@
+# gemma.cpp is a lightweight, standalone C++ inference engine for the Gemma
+# foundation models from Google.
+
+load("@rules_license//rules:license.bzl", "license")
+
+package(
+    default_applicable_licenses = ["//:license"],
+    default_visibility = ["//visibility:public"],
+)
+
+license(
+    name = "license",
+    package_name = "gemma_cpp",
+)
+
+# Dual-licensed Apache 2 and 3-clause BSD.
+licenses(["notice"])
+
+exports_files(["LICENSE"])
+
+cc_library(
+    name = "transformer_ops",
+    hdrs = [
+        "ops.h",
+    ],
+    deps = [
+        "//compression:compress",
+        "@hwy//:algo",
+        "@hwy//:dot",
+        "@hwy//:hwy",
+        "@hwy//:math",
+        "@hwy//:matvec",
+        "@hwy//:profiler",
+        "@hwy//:thread_pool",
+        "@hwy//hwy/contrib/sort:vqsort",
+    ],
+)
+
+cc_library(
+    name = "args",
+    hdrs = [
+        "util/args.h",
+    ],
+    deps = [
+        "@hwy//:hwy",
+    ],
+)
+
+cc_library(
+    name = "app",
+    hdrs = [
+        "util/app.h",
+    ],
+    deps = [
+        ":args",
+        "@hwy//:hwy",
+    ],
+)
+
+cc_library(
+    name = "gemma_lib",
+    srcs = [
+        "gemma.cc",
+    ],
+    hdrs = [
+        "configs.h",
+        "gemma.h",
+    ],
+    deps = [
+        ":args",
+        ":transformer_ops",
+        "//compression:compress",
+        "@hwy//:hwy",
+        "@hwy//:matvec",
+        "@hwy//:nanobenchmark",  # timer
+        "@hwy//:profiler",
+        "@hwy//:thread_pool",
+        "@com_google_sentencepiece//:sentencepiece_processor",
+    ],
+)
+
+cc_binary(
+    name = "gemma",
+    srcs = [
+        "run.cc",
+    ],
+    deps = [
+        ":app",
+        ":args",
+        ":gemma_lib",
+        "//compression:compress",
+        "@hwy//:hwy",
+        "@hwy//:nanobenchmark",
+        "@hwy//:profiler",
+        "@hwy//:thread_pool",
+    ],
+)
