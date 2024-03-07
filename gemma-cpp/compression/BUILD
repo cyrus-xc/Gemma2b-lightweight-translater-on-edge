@@ -1,10 +1,10 @@
 # Weight compression, I/O and analysis
 
 package(
-    default_applicable_licenses = ["//:license"],
+    default_applicable_licenses = ["//third_party/gemma_cpp:license"],
     default_visibility = [
         "//learning/gemini/prod/contrib/gemini_cpp:__subpackages__",
-        "//:__subpackages__",
+        "//third_party/gemma_cpp:__subpackages__",
     ],
 )
 
@@ -17,8 +17,10 @@ cc_library(
         "blob_store.h",
     ],
     deps = [
-        "@hwy//:hwy",
-        "@hwy//:thread_pool",
+        # copybara:import_next_line:hwy
+        "//:hwy",
+        # copybara:import_next_line:hwy
+        "//:thread_pool",
     ],
 )
 
@@ -32,7 +34,8 @@ cc_library(
         "stats.h",
     ],
     deps = [
-        "@hwy//:hwy",
+        # copybara:import_next_line:hwy
+        "//:hwy",
     ],
 )
 
@@ -45,7 +48,8 @@ cc_library(
         "sfp-inl.h",
     ],
     deps = [
-        "@hwy//:hwy",
+        # copybara:import_next_line:hwy
+        "//:hwy",
     ],
 )
 
@@ -61,11 +65,15 @@ cc_test(
     deps = [
         ":sfp",
         ":stats",
-        "@googletest//:gtest_main",
-        "@hwy//:hwy",
-        "@hwy//:hwy_test_util",
-        "@hwy//:nanobenchmark",
-        "@hwy//:thread_pool",
+        "//testing/base/public:gunit_main_no_google3",
+        # copybara:import_next_line:hwy
+        "//:hwy",
+        # copybara:import_next_line:hwy
+        "//:hwy_test_util",
+        # copybara:import_next_line:hwy
+        "//:nanobenchmark",
+        # copybara:import_next_line:hwy
+        "//:thread_pool",
     ],
 )
 
@@ -79,8 +87,9 @@ cc_library(
     ],
     deps = [
         ":sfp",
-        "@hwy//:hwy",
-        "@hwy//hwy/contrib/sort:vqsort",
+        # copybara:import_next_line:hwy
+        "//:hwy",
+        "//third_party/highway/hwy/contrib/sort:vqsort",
     ],
 )
 
@@ -97,10 +106,13 @@ cc_test(
         ":nuq",
         ":sfp",
         ":stats",
-        "@googletest//:gtest_main",
-        "@hwy//:hwy",
-        "@hwy//:hwy_test_util",
-        "@hwy//:nanobenchmark",
+        "//testing/base/public:gunit_main_no_google3",
+        # copybara:import_next_line:hwy
+        "//:hwy",
+        # copybara:import_next_line:hwy
+        "//:hwy_test_util",
+        # copybara:import_next_line:hwy
+        "//:nanobenchmark",
     ],
 )
 
@@ -119,9 +131,12 @@ cc_library(
         ":nuq",
         ":sfp",
         ":stats",
-        "@hwy//:dot",
-        "@hwy//:hwy",
-        "@hwy//:thread_pool",
+        # copybara:import_next_line:hwy
+        "//:dot",
+        # copybara:import_next_line:hwy
+        "//:hwy",
+        # copybara:import_next_line:hwy
+        "//:thread_pool",
     ],
 )
 
@@ -135,9 +150,12 @@ cc_library(
         ":nuq",
         ":sfp",
         ":stats",
-        "@hwy//:hwy",
-        "@hwy//:nanobenchmark",  # timer
-        "@hwy//:thread_pool",
-        "@hwy//hwy/contrib/sort:vqsort",
+        # copybara:import_next_line:hwy
+        "//:hwy",
+        # copybara:import_next_line:hwy
+        "//:nanobenchmark",  # timer
+        # copybara:import_next_line:hwy
+        "//:thread_pool",
+        "//third_party/highway/hwy/contrib/sort:vqsort",
     ],
 )
