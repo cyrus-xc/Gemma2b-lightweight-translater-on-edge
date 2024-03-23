@@ -2,13 +2,25 @@
 
 *Author: Chen Xu(cx2214) and Rishik Mishra (rm6397)*
 
-## Overview
+
+
+## Introduction
 
 
 
-## Code Structure
+## Objectives
 
 
+
+## Methodology
+
+form / table tasks (todos) and who they are assigned to 
+
+
+
+
+
+## 
 
 ## References
 

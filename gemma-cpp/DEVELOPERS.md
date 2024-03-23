@@ -118,8 +118,7 @@ jax / pytorch / keras for NN deployments.
 
 ### Gemma struct contains all the state of the inference engine - tokenizer, weights, and activations
 
-`Gemma(...)` - constructor, creates a gemma model object, which is a wrapper
-around 3 things - the tokenizer object, weights, activations, and KV Cache.
+`Gemma(...)` - constructor, creates a gemma model object. 
 
 In a standard LLM chat app, you'll probably use a Gemma object directly, in
 more exotic data processing or research applications, you might decompose
@@ -127,13 +126,15 @@ working with weights, kv cache and activations (e.g. you might have multiple kv
 caches and activations for a single set of weights) more directly rather than
 only using a Gemma object.
 
-## Use the tokenizer in the Gemma object (or interact with the Tokenizer object directly)
+### Use the tokenizer in the Gemma object (or interact with the Tokenizer object directly)
 
-You pretty much only do things with the tokenizer, call `Encode()` to go from
-string prompts to token id vectors, or `Decode()` to go from token id vector
-outputs from the model back to strings.
+The Gemma object contains contains a pointer to a Tokenizer object. The main
+operations performed on the tokenizer are to load the tokenizer model from a
+file (usually `tokenizer.spm`), call `Encode()` to go from string prompts to
+token id vectors, or `Decode()` to go from token id vector outputs from the
+model back to strings.
 
-## The main entrypoint for generation is `GenerateGemma()`
+### `GenerateGemma()` is the entrypoint for token generation
 
 Calling into `GenerateGemma` with a tokenized prompt will 1) mutate the
 activation values in `model` and 2) invoke StreamFunc - a lambda callback for
@@ -150,7 +151,7 @@ constrained decoding type of use cases where you want to force the generation
 to fit a grammar. If you're not doing this, you can send an empty lambda as a
 no-op which is what `run.cc` does.
 
-## If you want to invoke the neural network forward function directly call the `Transformer()` function
+### `Transformer()` implements the inference (i.e. `forward()` method in PyTorch or Jax) computation of the neural network
 
 For high-level applications, you might only call `GenerateGemma()` and never
 interact directly with the neural network, but if you're doing something a bit
@@ -158,10 +159,19 @@ more custom you can call transformer which performs a single inference
 operation on a single token and mutates the Activations and the KVCache through
 the neural network computation.
 
-## For low level operations, defining new architectures, call `ops.h` functions directly
+### For low level operations, defining new architectures, call `ops.h` functions directly
 
 You use `ops.h` if you're writing other NN architectures or modifying the
 inference path of the Gemma model.
+
+## Building with Bazel
+
+The sentencepiece library we depend on requires some additional work to build
+with the Bazel build system. First, it does not export its BUILD file, so we
+provide `bazel/sentencepiece.bazel`. Second, it ships with a vendored subset of
+the Abseil library. `bazel/com_google_sentencepiece.patch` changes the code to
+support Abseil as a standalone dependency without third_party/ prefixes, similar
+to the transforms we apply to Gemma via Copybara.
 
 ## Discord
 
