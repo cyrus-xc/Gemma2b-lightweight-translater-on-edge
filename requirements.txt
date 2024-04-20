@@ -1,1 +1,9 @@
-pygemma>=0.1.2
+# pygemma
+transformers
+sounddevice
+scipy
+sentencepiece
+protobuf
+Accelerate # for bark
+#flash-attn # for bark
+google-cloud #cloud api
