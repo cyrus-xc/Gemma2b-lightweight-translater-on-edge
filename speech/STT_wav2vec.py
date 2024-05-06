@@ -13,7 +13,7 @@ def transcribe_audio(file_path, asr_model):
 # Parameters for recording
 fs = 44100  # Sample rate
 seconds = 5  # Duration of recording in seconds
-file_path = 'outputs/output.wav'
+file_path = 'outputs/hindi_input.wav'
 
 # Load ASR model
 asr_model = foreign_class(source="speechbrain/asr-wav2vec2-ctc-aishell",  pymodule_file="custom_interface.py", classname="CustomEncoderDecoderASR")
@@ -24,12 +24,10 @@ while True:
     print("Beep!")
     sd.play(0.1 * np.sin(2 * np.pi * 1000 * np.arange(0.1 * fs) / fs), samplerate=fs, blocking=True)
     
-    # Recording
+    # # Recording
     print("Recording...")
     recording = sd.rec(int(seconds * fs), samplerate=fs, channels=2)
     sd.wait()  # Wait until recording is finished
-    
-    # Save the recording as WAV file
     write(file_path, fs, recording)
     
     # Transcription
@@ -40,10 +38,11 @@ while True:
     print("Transcription:", transcribed_text)
     
     # Remove the file
-    os.remove(file_path)
+    # os.remove(file_path)
     
     # Print the time taken for sample generation and prediction
     print("Time taken for sample generation and prediction:", end_time - start_time, "seconds")
 	
 	# Wait for a while before starting the next recording
     time.sleep(1)  # adjust the duration of sleep if needed
+    break

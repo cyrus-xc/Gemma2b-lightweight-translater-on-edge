@@ -9,7 +9,7 @@ processor = AutoProcessor.from_pretrained("facebook/seamless-m4t-v2-large")
 model = SeamlessM4Tv2Model.from_pretrained("facebook/seamless-m4t-v2-large")
 
 
-# audio_sample = ...
+# audio_sample = ... 
 # audio_inputs = processor(audios=audio_sample["array"], return_tensors="pt")
 
 # Please specify a `tgt_lang` in afr,amh,arb,ary,arz,asm,azj,bel,ben,bos,

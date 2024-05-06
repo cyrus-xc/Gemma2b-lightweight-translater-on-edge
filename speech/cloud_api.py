@@ -99,7 +99,7 @@ language_codes = ["zh-TW", "hi-IN"]
 for i in range(1):
     duration = 5  # seconds
     audio_file = f"outputs/audio_{i}.wav"
-    record_audio(duration, audio_file)
+    # record_audio(duration, audio_file)
     print(f"Transcribing audio {i+1}")
     response = cloud_STT(audio_file)
     # response = transcribe_multiple_languages_v2(project_id, language_codes, audio_file)

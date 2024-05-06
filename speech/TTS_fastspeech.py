@@ -1,49 +1,29 @@
-import os
-import urllib.request
-import sounddevice as sd
-import torch
-from speechbrain.lobes.models.FastSpeech2 import FastSpeech2
+import torchaudio
+from speechbrain.inference.TTS import FastSpeech2
+from speechbrain.inference.vocoders import HIFIGAN
+import torch.autograd.profiler as profiler
 
-# Function to download the file if it doesn't exist
-def download_if_not_exist(url, directory):
-    filename = url.split('/')[-1]
-    file_path = os.path.join(directory, filename)
-    
-    if not os.path.exists(file_path):
-        print(f"Downloading {filename}...")
-        urllib.request.urlretrieve(url, file_path)
-        print(f"{filename} downloaded successfully.")
-    else:
-        print(f"{filename} already exists.")
-        
-# Function to generate audio using FastSpeech2
-def generate_audio(text, model):
-    with torch.no_grad():
-        waveform, _ = model.encode_text(text)
-    return waveform
+# Initialize TTS (tacotron2) and Vocoder (HiFIGAN)
+fastspeech2 = FastSpeech2.from_hparams(source="speechbrain/tts-fastspeech2-ljspeech", savedir="pretrained_models/tts-fastspeech2-ljspeech")
+hifi_gan = HIFIGAN.from_hparams(source="speechbrain/tts-hifigan-ljspeech", savedir="pretrained_models/tts-hifigan-ljspeech")
 
-# Directory to save the pretrained models
-model_dir = "./pretrained_models/TTS_models"
-os.makedirs(model_dir, exist_ok=True)
+# Run TTS with text input
+input_text = "嗨;我是一名纽约大学的学生;我爱计算机科学;"
+mel_output, durations, pitch, energy = fastspeech2.encode_text(
+    [input_text],
+    pace=1.0,        # scale up/down the speed
+    pitch_rate=1.0,  # scale up/down the pitch
+    energy_rate=1.0, # scale up/down the energy
+)
 
-# Download FastSpeech2 pretrained model if not exists
-fastspeech2_url = "https://drive.google.com/uc?export=download&id=1eRG23lQngmG68gh8Xhy_Nsh5ijie5bMd"
-download_if_not_exist(fastspeech2_url, model_dir)
+# Start profiling
+with profiler.profile(record_shapes=True) as prof:
+    with profiler.record_function("model_generation"):
+        # Running Vocoder (spectrogram-to-waveform)
+        waveforms = hifi_gan.decode_batch(mel_output)
 
-# Load FastSpeech2 model
-fastspeech2 = FastSpeech2.from_hparams(source=model_dir)
+# Print the profiler results
+print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=10))
 
-# Text to be synthesized
-text = "Hello, how are you?"
-
-# Generate audio
-audio = generate_audio(text, fastspeech2)
-
-# Play audio
-print("Playing audio...")
-sd.play(audio.squeeze().numpy(), fastspeech2.sample_rate)
-
-# Wait for audio to finish playing
-status = sd.wait()
-
-print("Audio playback finished.")
+# Save the waveform using scipy
+torchaudio.save('example_TTS_input_phoneme.wav', waveforms.squeeze(1), 22050)
