@@ -95,7 +95,6 @@ def transcribe_multiple_languages_v2(
 project_id = "gemma-speech-420819"
 language_codes = ["zh-TW", "hi-IN"]
 
-# Record and transcribe 5 audio files
 for i in range(1):
     duration = 5  # seconds
     audio_file = f"outputs/audio_{i}.wav"

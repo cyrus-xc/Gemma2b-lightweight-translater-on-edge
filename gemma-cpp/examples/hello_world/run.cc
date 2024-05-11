@@ -17,22 +17,18 @@
 
 // copybara:import_next_line:gemma_cpp
 #include "gemma.h"
-// copybara:end
+// copybara:import_next_line:gemma_cpp
+#include "util/app.h"  // LoaderArgs
+#include "hwy/contrib/thread_pool/thread_pool.h"
 // copybara:import_next_line:gemma_cpp
 #include "util/args.h"
-// copybara:end
-// copybara:import_next_line:gemma_cpp
-#include "util/app.h" // LoaderArgs
-// copybara:end
-#include "hwy/contrib/thread_pool/thread_pool.h"
 
-std::vector<int> tokenize(
-    const std::string& prompt_string,
-    const sentencepiece::SentencePieceProcessor* tokenizer) {
+std::vector<int> tokenize(const std::string& prompt_string,
+                          const gcpp::GemmaTokenizer* tokenizer) {
   std::string formatted = "<start_of_turn>user\n" + prompt_string +
                           "<end_of_turn>\n<start_of_turn>model\n";
   std::vector<int> tokens;
-  HWY_ASSERT(tokenizer->Encode(formatted, &tokens).ok());
+  HWY_ASSERT(tokenizer->Encode(formatted, &tokens));
   tokens.insert(tokens.begin(), 2);  // BOS token
   return tokens;
 }
@@ -46,8 +42,7 @@ int main(int argc, char** argv) {
   hwy::ThreadPool pool(num_threads);
 
   // Instantiate model and KV Cache
-  gcpp::Gemma model(loader.tokenizer, loader.compressed_weights,
-                    loader.ModelType(), pool);
+  gcpp::Gemma model(loader.tokenizer, loader.weights, loader.ModelType(), pool);
   auto kv_cache = CreateKVCache(loader.ModelType());
   size_t pos = 0;  // KV Cache position
 
@@ -62,14 +57,14 @@ int main(int argc, char** argv) {
   size_t ntokens = tokens.size();
 
   // This callback function gets invoked everytime a token is generated
-  auto stream_token = [&pos, &gen, &ntokens, tokenizer = model.Tokenizer()](
-                          int token, float) {
+  auto stream_token = [&pos, &ntokens, tokenizer = model.Tokenizer()](int token,
+                                                                      float) {
     ++pos;
     if (pos < ntokens) {
       // print feedback
     } else if (token != gcpp::EOS_ID) {
       std::string token_text;
-      HWY_ASSERT(tokenizer->Decode(std::vector<int>{token}, &token_text).ok());
+      HWY_ASSERT(tokenizer->Decode(std::vector<int>{token}, &token_text));
       std::cout << token_text << std::flush;
     }
     return true;
@@ -82,5 +77,5 @@ int main(int argc, char** argv) {
                  .verbosity = 0},
                 tokens, /*KV cache position = */ 0, kv_cache, pool,
                 stream_token, gen);
-  std::cout << std::endl;
+  std::cout << "\n";
 }

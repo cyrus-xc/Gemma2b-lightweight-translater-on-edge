@@ -52,6 +52,13 @@ cmake --build --preset make -j8
 
 If the build is successful, you should now have a `gemma` executable in the `build/` directory.
 
+also build gemma-cpp
+
+```
+cd ../gemma-cpp-python
+pip install .
+```
+
 ##### Windows
 
 Building natively on Windows requires the Visual Studio 2012 Build Tools with the optional Clang/LLVM C++ frontend (`clang-cl`). This can be installed from the command line with [`winget`](https://learn.microsoft.com/en-us/windows/package-manager/winget/):
