@@ -18,13 +18,10 @@ import optax
 import pickle
 
 import tensorflow as tf
-import tensorflow_datasets as tfds
 
 from gemma import params as params_lib
 from gemma import sampler as sampler_lib
 from gemma import transformer as transformer_lib
-import sentencepiece as spm
-import json
 
 GEMMA_VARIANT = '2b-it' # @param ['2b', '2b-it'] {type:"string"}
 
