@@ -10,6 +10,7 @@ import os
 
 # Auto detect speech language and transcript to text
 from google.cloud import speech_v1p1beta1 as speech
+
 def cloud_STT(speech_file):
     client = speech.SpeechClient()
 
@@ -30,9 +31,8 @@ def cloud_STT(speech_file):
     response = client.recognize(config=config, audio=audio)
     end_time = time.time()
     print("Time taken:", end_time - start_time, "s")
-
-
     transcripts = []
+
     for i, result in enumerate(response.results):
         alternative = result.alternatives[0]
         print("-" * 20)
@@ -41,6 +41,35 @@ def cloud_STT(speech_file):
         transcripts.append(alternative.transcript)
 
     return transcripts
+
+
+
+from google.cloud import texttospeech
+
+def cloud_TTS(text, language="en-US"):
+    client = texttospeech.TextToSpeechClient()
+
+    synthesis_input = texttospeech.SynthesisInput(text=text)
+
+    voice = texttospeech.VoiceSelectionParams(
+        language_code=language, ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL
+    )
+
+    audio_config = texttospeech.AudioConfig(
+        audio_encoding=texttospeech.AudioEncoding.LINEAR16
+    )
+
+    response = client.synthesize_speech(
+        input=synthesis_input, voice=voice, audio_config=audio_config
+    )
+
+    with open("output.mp3", "wb") as out:
+        out.write(response.audio_content)
+    
+    print("Text-to-Speech conversion completed. Output saved as output.mp3")
+
+    return "output.mp3"
+
 
 
 
@@ -53,43 +82,47 @@ def record_audio(duration, file_path):
     wav.write(file_path, fs, recording)
 
 
-from google.cloud.speech_v2 import SpeechClient
-from google.cloud.speech_v2.types import cloud_speech
-def transcribe_multiple_languages_v2(
-    project_id: str,
-    language_codes: List[str],
-    audio_file: str,
-) -> cloud_speech.RecognizeResponse:
-    """Transcribe an audio file."""
-    # Instantiates a client
-    client = SpeechClient()
+# from google.cloud.speech_v2 import SpeechClient
+# from google.cloud.speech_v2.types import cloud_speech
+# def transcribe_multiple_languages_v2(
+#     project_id: str,
+#     language_codes: List[str],
+#     audio_file: str,
+# ) -> cloud_speech.RecognizeResponse:
+#     """Transcribe an audio file."""
+#     # Instantiates a client
+#     client = SpeechClient()
 
-    # Reads a file as bytes
-    with open(audio_file, "rb") as f:
-        content = f.read()
+#     # Reads a file as bytes
+#     with open(audio_file, "rb") as f:
+#         content = f.read()
 
-    config = cloud_speech.RecognitionConfig(
-        auto_decoding_config=cloud_speech.AutoDetectDecodingConfig(),
-        language_codes=language_codes,
-        model="latest_short",
-    )
+#     config = cloud_speech.RecognitionConfig(
+#         auto_decoding_config=cloud_speech.AutoDetectDecodingConfig(),
+#         language_codes=language_codes,
+#         model="latest_short",
+#     )
 
-    request = cloud_speech.RecognizeRequest(
-        recognizer=f"projects/{project_id}/locations/global/recognizers/_",
-        config=config,
-        content=content,
-    )
+#     request = cloud_speech.RecognizeRequest(
+#         recognizer=f"projects/{project_id}/locations/global/recognizers/_",
+#         config=config,
+#         content=content,
+#     )
 
-    # Transcribes the audio into text
-    response = client.recognize(request=request)
+#     # Transcribes the audio into text
+#     response = client.recognize(request=request)
 
-    for result in response.results:
-        print(f"Transcript: {result.alternatives[0].transcript}")
+#     for result in response.results:
+#         print(f"Transcript: {result.alternatives[0].transcript}")
 
-    return response
+#     return response
+
+
+
+
 
 ############################
-###### Example useage ######
+###### Example useage #########
 ############################
 
 project_id = "gemma-speech-420819"
@@ -101,8 +134,11 @@ for i in range(1):
     # record_audio(duration, audio_file)
     print(f"Transcribing audio {i+1}")
     response = cloud_STT(audio_file)
-    # response = transcribe_multiple_languages_v2(project_id, language_codes, audio_file)
-    print("Response:", response)
+    
+    # Convert transcribed text to speech
+    for text in response:
+        print(f"Converting text to speech for: {text}")
+        audio_output = cloud_TTS(text)
 
 
 

@@ -12,7 +12,7 @@ This project is to build a real-time voice translator based on Google Gemma 2b L
 
 *Original Repo: https://github.com/google/gemma.cpp*
 
-#### Step 1: Obtain model weights and tokenizer from Kaggle
+#### Step 1: Obtain model weights and tokenizer
 
 Visit [the Gemma model page on Kaggle](https://www.kaggle.com/models/google/gemma/frameworks/gemmaCpp) and select `Model Variations |> Gemma C++`. On this tab, the `Variation` dropdown includes the options below. Download model `2b-it-sfp` 
 
