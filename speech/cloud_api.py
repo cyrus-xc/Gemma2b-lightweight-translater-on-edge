@@ -31,16 +31,20 @@ def cloud_STT(speech_file):
     response = client.recognize(config=config, audio=audio)
     end_time = time.time()
     print("Time taken:", end_time - start_time, "s")
+    
     transcripts = []
+    languages = []
 
     for i, result in enumerate(response.results):
         alternative = result.alternatives[0]
         print("-" * 20)
         print(f"First alternative of result {i}: {alternative}")
         print(f"Transcript: {alternative.transcript}")
+        print(f"Detected language: {result.language_code}")  # Access the detected language code
         transcripts.append(alternative.transcript)
+        languages.append(result.language_code)
 
-    return transcripts
+    return transcripts, languages
 
 
 
@@ -63,12 +67,12 @@ def cloud_TTS(text, language="en-US"):
         input=synthesis_input, voice=voice, audio_config=audio_config
     )
 
-    with open("output.mp3", "wb") as out:
+    with open("outputs/output.mp3", "wb") as out:
         out.write(response.audio_content)
     
-    print("Text-to-Speech conversion completed. Output saved as output.mp3")
+    print("Text-to-Speech conversion completed. Output saved as outputs/output.mp3")
 
-    return "output.mp3"
+    return "outputs/output.mp3"
 
 
 
@@ -81,6 +85,10 @@ def record_audio(duration, file_path):
     print("Recording finished.")
     wav.write(file_path, fs, recording)
 
+def play_audio(filename):
+    data, fs = sd.read(filename, dtype='int16')
+    sd.play(data, fs)
+    sd.wait()
 
 # from google.cloud.speech_v2 import SpeechClient
 # from google.cloud.speech_v2.types import cloud_speech
@@ -133,12 +141,12 @@ for i in range(1):
     audio_file = f"outputs/audio_{i}.wav"
     # record_audio(duration, audio_file)
     print(f"Transcribing audio {i+1}")
-    response = cloud_STT(audio_file)
+    response, languages = cloud_STT(audio_file)
     
     # Convert transcribed text to speech
-    for text in response:
-        print(f"Converting text to speech for: {text}")
-        audio_output = cloud_TTS(text)
+    print(f"Converting text to speech for: {response}")
+    audio_output = cloud_TTS(response, languages)
+    play_audio(audio_output)
 
 
 
