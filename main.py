@@ -96,7 +96,7 @@ print("CPU Time (Trained Model):", trained_trace.trace_main_thread_cpu_time())
 import speech.cloud_api as api
 # Define the project ID and language codes
 project_id = "gemma-speech-420819"
-language_codes = ["zh-TW", "hi-IN"]
+language_codes = ["zh-Hans-CN", "hi-IN"]
 
 # Main loop
 while True:
@@ -109,9 +109,12 @@ while True:
     print("Detected languages:", languages)
     
     # Determine the translation prompt based on the detected language
+    lang = 0
     if "hi-IN" in languages:
+        lang = 0
         prompt = f"Translate this Hindi to Chinese:\n{response}\n"
     elif "zh-Hans-CN" in languages:
+        lang = 1
         prompt = f"Translate this Chinese to Hindi:\n{response}\n"
     else:
         prompt = None
@@ -125,7 +128,7 @@ while True:
         print("Translated text:", translated_text)
         
         # Convert translated text to speech
-        audio_output = api.cloud_TTS(translated_text)
+        audio_output = api.cloud_TTS(translated_text, language_codes[lang])
         
         # Play the generated audio
         api.play_audio(audio_output)
