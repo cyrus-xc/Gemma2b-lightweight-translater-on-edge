@@ -134,7 +134,7 @@ def play_audio(filename):
 ############################
 
 project_id = "gemma-speech-420819"
-language_codes = ["zh-TW", "hi-IN"]
+language_codes = ["zh-Hans-CN", "hi-IN"]
 
 for i in range(1):
     duration = 5  # seconds
