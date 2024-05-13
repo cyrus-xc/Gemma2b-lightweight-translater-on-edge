@@ -1,5 +1,6 @@
 from typing import List
 import sounddevice as sd
+import soundfile as sf
 import scipy.io.wavfile as wav
 import time
 import os
@@ -85,11 +86,29 @@ def record_audio(duration, file_path):
     print("Recording finished.")
     wav.write(file_path, fs, recording)
 
-def play_audio(filename):
-    data, fs = sd.read(filename, dtype='int16')
+def play_audio(file_path):
+    data, fs = sf.read(file_path)
     sd.play(data, fs)
     sd.wait()
+    
+import math
+def beep(duration=0.1, frequency=1000, samplerate=44100):
+    """
+    Generate a beep sound.
+    
+    Parameters:
+        duration (float): Duration of the beep in seconds.
+        frequency (float): Frequency of the beep sound in Hertz.
+        samplerate (int): Sample rate of the audio device.
+    """
+    num_samples = int(duration * samplerate)
+    t = [float(i) / samplerate for i in range(num_samples)]
+    beep_signal = [math.sin(2 * math.pi * frequency * t_i) for t_i in t]
 
+    # Play the beep sound
+    sd.play(beep_signal, samplerate=samplerate)
+    sd.wait()
+    
 # from google.cloud.speech_v2 import SpeechClient
 # from google.cloud.speech_v2.types import cloud_speech
 # def transcribe_multiple_languages_v2(
@@ -138,14 +157,14 @@ def play_audio(filename):
 
 # for i in range(1):
     # duration = 5  # seconds
-    # audio_file = f"outputs/audio_{i}.wav"
+    # audio_file = f"outputs/audio.wav"
     # # record_audio(duration, audio_file)
     # print(f"Transcribing audio {i+1}")
     # response, languages = cloud_STT(audio_file)
     
     # # Convert transcribed text to speech
-    # print(f"Converting text to speech for: {response}")
-    # audio_output = cloud_TTS(response, languages)
+    # print(f"Converting text to speech for: {response[0]}")
+    # audio_output = cloud_TTS(response[0], language_codes[0])
     # play_audio(audio_output)
 
 

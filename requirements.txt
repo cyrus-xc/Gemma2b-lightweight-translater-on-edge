@@ -1,6 +1,7 @@
 pygemma==0.1.3
 transformers
 sounddevice
+soundfile
 scipy
 sentencepiece
 protobuf
