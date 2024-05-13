@@ -133,20 +133,20 @@ def play_audio(filename):
 ###### Example useage #########
 ############################
 
-project_id = "gemma-speech-420819"
-language_codes = ["zh-Hans-CN", "hi-IN"]
+# project_id = "gemma-speech-420819"
+# language_codes = ["zh-Hans-CN", "hi-IN"]
 
-for i in range(1):
-    duration = 5  # seconds
-    audio_file = f"outputs/audio_{i}.wav"
-    # record_audio(duration, audio_file)
-    print(f"Transcribing audio {i+1}")
-    response, languages = cloud_STT(audio_file)
+# for i in range(1):
+    # duration = 5  # seconds
+    # audio_file = f"outputs/audio_{i}.wav"
+    # # record_audio(duration, audio_file)
+    # print(f"Transcribing audio {i+1}")
+    # response, languages = cloud_STT(audio_file)
     
-    # Convert transcribed text to speech
-    print(f"Converting text to speech for: {response}")
-    audio_output = cloud_TTS(response, languages)
-    play_audio(audio_output)
+    # # Convert transcribed text to speech
+    # print(f"Converting text to speech for: {response}")
+    # audio_output = cloud_TTS(response, languages)
+    # play_audio(audio_output)
 
 
 
