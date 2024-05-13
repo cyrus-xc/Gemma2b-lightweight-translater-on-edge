@@ -1,5 +1,6 @@
 from pygemma import Gemma, ModelType, ModelTraining
-import speech.cloud_api as api 
+import speech.cloud_api as api
+import re
 
 # gemma.show_help()
 # gemma.show_config()
@@ -46,7 +47,14 @@ while True:
         print("Translated text:", translated_text)
         
         # Convert translated text to speech
-        audio_output = api.cloud_TTS(translated_text, language_codes[lang])
+	matches = ""
+	if lang == 0:
+		pattern_chinese = r"\*\* Chinese: \*\* (.+?)\*\*"
+		matches = re.findall(pattern_chinese, translated_text, re.DOTALL)
+	else:
+		pattern_hindi = r"\*\* Hindi: \*\* (.+?)\*\*"
+		matches = re.findall(pattern_hindi, translated_text, re.DOTALL)
+        audio_output = api.cloud_TTS(matches, language_codes[lang])
         
         # Play the generated audio
         api.play_audio(audio_output)
