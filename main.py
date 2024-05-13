@@ -5,7 +5,6 @@ import speech.cloud_api as api
 gemma = Gemma()
 # gemma.show_help()
 # gemma.show_config()
-gemma.load_model(, , )
 gemma = Gemma(
     tokenizer_path="gemma-cpp/build/tokenizer.spm",
     compressed_weights_path="gemma-cpp/build/2b-it-sfp.sbs",
