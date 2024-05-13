@@ -1,11 +1,17 @@
-from pygemma import Gemma
+from pygemma import Gemma, ModelType, ModelTraining
 import speech.cloud_api as api 
 
 
 gemma = Gemma()
 # gemma.show_help()
 # gemma.show_config()
-gemma.load_model("/path/to/tokenizer", "/path/to/compressed_weight/", "model_type")
+gemma.load_model(, , )
+gemma = Gemma(
+    tokenizer_path="gemma-cpp/build/tokenizer.spm",
+    compressed_weights_path="gemma-cpp/build/2b-it-sfp.sbs",
+    model_type=ModelType.Gemma2B,
+    model_training=ModelTraining.GEMMA_IT,
+)
 
 project_id = "gemma-speech-420819"
 language_codes = ["zh-Hans-CN", "hi-IN"]
